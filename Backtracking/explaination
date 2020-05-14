@@ -1,0 +1,62 @@
+/*
+In der letzten Aufgabe beschäftigen wir uns mit dem n-Damen-Problem. Auf einem nxn-Schachbrett sollen n Damen so
+platziert werden, dass sie sich nicht gegenseitig bedrohen, d.h. es darf nicht mehr als eine Dame in einer horizontalen
+oder vertikalen Reihe stehen und auch auf den Diagonalen darf sich jeweils nur eine Dame befinden.
+Oft wird das Schachbrett hierbei als zweidimensionales Array modelliert, so z.B. auch im entsprechenden Wikipedia-
+Artikel. Das kann aber leicht unübersichtlich werden. Wir wollen daher in dieser Aufgabe darauf verzichten. Stattdessen
+nehmen wir ein eindimensionales int-Array, in dem wir für jede „Zeile“ (Index) die „Spalte“ (Element) speichern, in der
+die Dame auf dem Schachbrett steht. Der Gedanke dahinter ist der folgende: Da in einer horizontalen Reihe (Zeile) nicht
+mehr als eine Dame stehen kann, müssen wir uns nur die Position merken, an welcher sie steht. Umgekehrt bedeutet
+das auch, dass auf einem nxn-Schachbrett in jeder horizontalen Reihe eine Dame stehen muss, denn sonst wären zwei in
+einer Reihe. Also erscheint ein int-Array angemessen. Dieses können wir, sobald wir eine Lösung gefunden haben, in ein
+zweidimensionales Array „verwandeln“ und dieses dann zurückgeben, um den Vertrag zu erfüllen.
+Wir schreiben nun eine Hilfsethode, die unter Verwendung der oben beschreibenen Modellierung mit einem eindimensionalen
+Array eine Lösung bestimmt. Dabei gehen wir so vor: Wir starten mit einem leeren int-Array. Dann erzeugen wir
+ein neues Array, das ein Element mehr hat und kopieren die Elemente des alten Array an die entsprechenden Positionen
+des neuen Arrays. Für das letzte Element versuchen wir dann eine „Spalten“(Position) für die Dame zu finden, so dass sie
+nicht bedroht wird. Dabei müssen wir nur die Diagonalen und Spalten prüfen, denn unser eindimensionales Array verhindert
+ja bereits „by design“, dass wir mehr als eine Dame in eine Zeile setzen. Als geeignete Spalten kommen Werte von
+0 bis n 􀀀 1 infrage. Diese können wir also durchprobieren. Kommt eine „Spaltennummer“ in unserem Array bereits vor,
+so scheidet sie aus, denn sonst würden ja zwei Damen in einer Spalte stehen. Bestimmen wir eine Spalte p für die Dame
+in der k-ten Zeile, so muss für alle Spaltennummern q an Position m jk 􀀀 mj 6= jp 􀀀 qj gelten, sonst stünden zwei Damen
+in einer Diagonale. Entsprechend iterieren wir so lange, bis wir eine passende Spalte für die zu setzende Dame gefunden
+haben. Diese setzen wir dann in das neue eindimensionale Array ein und rufen die Methode rekursiv auf, um die nächste
+Dame einzusetzen. Haben wir im Array n Elemente, so ist dies eine Lösung und wir können das Array zurückgeben.
+Nun zum Backtracking: Es kann natürlich sein, dass wir keine Position in der aktuellen Zeile finden können, an der
+die Dame platziert werden kann, da die bisher gesetzten Damen alle Felder in dieser Zeile bedrohen. In diesem Fall
+kommen wir nicht mehr weiter. Um dies anzuzeigen, geben wir null zurück und erweitern die Methode so, dass sie dann
+weiteriteriert, d.h. wir versuchen, die Dame in der vorherigen Zeile auf eine anderes Feld zu setzen und versuchen dann
+erneut, weiterzukommen. Klappt das auch nicht, wird die Zeile davor neu besetzt usw.
+
+Implementierung
+Oben beschriebenes Vorgehen setzen wir in Java-Code um: Wir füllen die Methode
+int[][] solveNQueens(int n) mit einem Algorithmus, der die oben skizzierte Hilfsfunktion
+solveNQueensHelper(int n, int[] current) mit n und einem leeren eindimensionalen Array aufruft. Das zurückgelieferte
+eindimensionale Array repräsentiert dann nach obigen Überlegungen eine Lösung des n-Damen-Problems. Um
+diese in ein zweidimensionales Array zu übertragen, erzeugen wir dieses zunächst mit
+int[][] result = new int[n][n] und setzen dann result[i][a[i]] auf 1, denn das eindimensionale Array gibt ja
+die „Spalte“ an, in der die Dame in der entsprechenden Zeile stehen soll.
+Die Hilfsfunktion erhält n sowie das eindimensionale Array current, das die aktuelle Aufstellung enthält. Ist
+n == current.length, dann haben wir n Damen auf dem Schachbrett verteilt und sind fertig, d.h. wir können current
+zurückgeben. Ansonsten erzeugen wir wie oben beschrieben das neues Array, das ein Element mehr enthält und kopieren
+die bisherigen Elemente. Statt mit einer for-Schleife kann man das in Java auch als Einzeiler mit System.arraycopy
+machen. System.arraycopy(current, 0, a, 0, current.length) bedeutet: „Kopiere die Elemente current[0], current[
+1], ..., current[0 + current.length - 1] in a[0], a[1], ..., a[0 + current.length - 1]“. Mehr Informationen dazu findet
+man in der Dokumentation der Java-Standardbibliothek.
+In der in Zeile 21 beginnenden Schleife werden alle möglichen „Spaltenpositionen“ durchgegangen. Die innere Schleife
+prüft, ob das Feld in Zeile a.length - 1 bedroht ist. Sie iteriert über alle bereits gesetzten Damen und prüft mit der oben
+entwickelten Bedingung, ob eine davon das aktuell betrachtete Feld bedroht. Falls dem so ist, prüfen wir das nächste
+i, prüfen also die Schleifenbedingung der äußeren Schleife erneut. Allerdings können wir hierbei das Schlüsselwort
+continue nicht einfach so verwenden, denn das würde sich ja auf die innere Schleife beziehen! Zum Glück bietet Java
+für solche Fälle ein interessantes Sprachkonstrukt: Wir können Schleifen Labels (Namen) geben, wie in Zeile 21: Die
+äußere Schleife wird „outerloop“ genannt. continue outerloop; bezieht sich dann auf diese Schleife und nicht auf die
+innere.
+Sobald wir eine passende Spalte i gefunden haben, setzen wir deren Nummer an die letzte Stelle des Arrays und rufen
+solveNQueensHelper rekursiv auf. Wie wir uns überlegt haben, liefert dieser Aufruf entweder eine vollständige Lösung
+oder null, falls die bisherige Besetzung des Schachbretts in eine Sackgasse führt. Falls wir eine Lösung gefunden haben,
+geben wir sie natürlich zurück, sonst lassen wir die Schleife weiterlaufen, um es mit der nächsten passenden Spalte zu versuchen, wie oben betrachtet. Ist die Schleife komplett durchgelaufen, so gibt es keine Lösung und wir geben null
+zurück. So kommt das Backtracking zustande.
+
+
+
+*/
