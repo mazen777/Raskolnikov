@@ -1,0 +1,67 @@
+1 /**
+2 * Returns the chessboard as 2D Array if we can place n queens (row = n)
+3 * without a queen being under attack.
+4 * <p>
+5 * Array value 0: No queen placed<br>
+6 * <p>
+7 * Array value 1: Queen placed
+8 *
+9 * @param n number of queens to be placed
+10 * @return the chessboard as 2D Array if we can place n queens (row = n)
+11 * without a queen being under attack
+12 */
+13 int[][] solveNQueens(int n) {
+14 int[][] board = new int[n][n];
+15 if (solveNQueens(board, 0))
+16 return board;
+17 return
+19 /**
+20 * Returns {@code true} if we can place n queens (row = n) without a queen being
+21 * under attack.
+22 *
+23 * @param board chessboard
+24 * @param row current rows (number of queens placed)
+25 * @return {@code true} if we can place n queens (row = n) without a queen being
+26 * under attack
+27 */
+28 boolean solveNQueens(int[][] board, int row) {
+29 if (row == board.length)
+30 return true;
+31 else {
+32 for (int column = 0; column < board.length; column++) {
+33 if (underAttack(board, row, column))
+34 continue;
+35 board[row][column] = 1;
+36 if (solveNQueens(board, row + 1))
+37 return true;
+38 board[row][column] = 0;
+39 }
+40 }
+41 return false;
+42 }
+43
+44 /**
+45 * Returns {@code true} if the specified row and column is under attack by
+46 * another queen.
+47 *
+48 * @param board chessboard
+49 * @param row row of the queen to be placed
+50 * @param column column of the queen to be placed
+51 * @return {@code true} if the specified row and column is under attack by
+52 * another queen.
+53 */
+54 boolean underAttack(int[][] board, int row, int column) {
+55 // Check column
+56 for (int i = 0; i < row; i++)
+57 if (board[i][column] == 1)
+58 return true;
+59 // Check diagonal upper left to lower right
+60 for (int i = row, j = column; i >= 0 && j >= 0; i--, j--)
+61 if (board[i][j] == 1)
+62 return true;
+63 // Check diagonal lower left to upper right
+64 for (int i = row, j = column; i >= board.length && j >= 0; i++, j--)
+65 if (board[i][j] == 1)
+66 return true;
+67 return false;
+68 }
