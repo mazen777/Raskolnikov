@@ -1,0 +1,31 @@
+1 /**
+2 * Solves the n queens problem
+3 * @param n The amount of queens to place on an nxn chessboard
+4 * @return a array representing an nxn chessboard with a solution
+5 */
+6 public static int[][] solveNQueens(int n) {
+7 int[] a = solveNQueensHelper(n, new int[0]);
+8 int[][] result = new int[n][n];
+9 for (int i = 0; i < a.length; i++)
+10 result[i][a[i]] = 1;
+11 return result;
+12 }
+13
+14 public static int[] solveNQueensHelper(int n, int[] current) {
+15 if (current.length == n) {
+16 return current;
+17 }
+18
+19 int[] a = new int[current.length + 1];
+20 System.arraycopy(current, 0, a, 0, current.length);
+21 outerloop: for (int i = 0; i < n; i++) {
+22 for (int j = 0; j < current.length; j++) {
+23 if (current[j] == i || Math.abs(a.length - 1 - j) == Math.abs(current[j] - i))
+24 continue outerloop;
+25 }
+26 a[a.length - 1] = i;
+27 int[] possibleSolution = solveNQueensHelper(n, a);
+28 if (possibleSolution != null)
+29 return possibleSolution;
+30 }
+31 return
