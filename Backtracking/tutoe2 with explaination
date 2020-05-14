@@ -28,4 +28,5 @@
 28 if (possibleSolution != null)
 29 return possibleSolution;
 30 }
-31 return
+31 return null;
+32 }
